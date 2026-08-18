@@ -6,10 +6,17 @@ use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Enums\UserStatus;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`users`')]
-class User
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,6 +24,8 @@ class User
     private ?int $id = null;
 
     #[ORM\Column(length: 255)] //name
+    #[Constraints\NotBlank(message: "Your name cannot be blank")]
+    #[Constraints\Length(min: 3, max: 30, minMessage: "Your name must be at least {{ limit }} characters long", maxMessage: "Your name cannot exceed {{ limit }} characters")]
     private ?string $name = null;
 
     #[ORM\Column(length: 180, unique: true)] //email
@@ -34,10 +43,21 @@ class User
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $registeredAt;
 
+
     public function __construct() {
       $time = new \DateTimeImmutable();
       $this->lastSeen = $time;
       $this->registeredAt = $time;
+    }
+
+    public function getRoles(): array{
+      return ["UserRole"];
+    }
+
+    public function eraseCredentials(): void{}
+
+    public function getUserIdentifier(): string {
+      return $this->email;
     }
 
     public function getId(): ?int {
@@ -96,5 +116,12 @@ class User
     public function setLastSeen(\DateTimeImmutable $lastSeen): static {
         $this->lastSeen = $lastSeen;
         return $this;
+    }
+
+    public function isEqualTo(UserInterface $user): bool {
+      if ($user->status === UserStatus::BLOCKED){
+        return false;
+      }
+      return true;
     }
 }

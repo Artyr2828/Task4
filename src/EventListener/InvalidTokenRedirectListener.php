@@ -16,11 +16,12 @@ final class InvalidTokenRedirectListener
     #[AsEventListener(event: 'kernel.request', priority: 5)]
     public function onRequestEvent(RequestEvent $event): void
     {
+      return;
       if (!$event->isMainRequest()) {return;}
 
       $privateRoute = ['app_home'];
       $request = $event->getRequest();
-      $currentRoute = $request->attributes->get('_route'); //arr
+      $currentRoute = $request->attributes->get('_route');
 
       if (!in_array($currentRoute, $privateRoute, true)){return;}
 

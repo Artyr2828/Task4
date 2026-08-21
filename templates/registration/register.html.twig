@@ -3,23 +3,57 @@
 {% block title %}Register{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-sm p-4" style="width: 100%; max-width: 420px; border-radius: 10px;">
 
-    <h1>Register</h1>
+        <h1 class="h3 fw-bold text-center mb-4 text-dark">Register</h1>
 
-    {{ form_errors(registrationForm) }}
-
-    {{ form_start(registrationForm) }}
-    {{ form_row(registrationForm.name) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
+    
+        {% for flash_error in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+        {% endfor %}
 
 
+        {% if form_errors(registrationForm) %}
+            <div class="alert alert-danger p-2 small">
+                {{ form_errors(registrationForm) }}
+            </div>
+        {% endif %}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+        {{ form_start(registrationForm) }}
+
+            <div class="mb-3">
+                {{ form_row(registrationForm.name, {
+                    'label_attr': {'class': 'form-label fw-semibold'},
+                    'attr': {'class': 'form-control', 'placeholder': 'Enter your name'}
+                }) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_row(registrationForm.email, {
+                    'label_attr': {'class': 'form-label fw-semibold'},
+                    'attr': {'class': 'form-control', 'placeholder': 'name@example.com'}
+                }) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_row(registrationForm.plainPassword, {
+                    'label': 'Password',
+                    'label_attr': {'class': 'form-label fw-semibold'},
+                    'attr': {'class': 'form-control', 'placeholder': '••••••••'}
+                }) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mt-2 fw-semibold">
+                Register
+            </button>
+
+        {{ form_end(registrationForm) }}
+
+        <div class="text-center mt-3">
+            <small class="text-muted">Already have an account? <a href="{{ path('app_login') }}" class="text-decoration-none">Sign in</a></small>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

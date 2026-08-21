@@ -64,6 +64,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
         return $this->id;
     }
 
+    public function getUniqIdValue(): int {
+      return $this->getId();
+    }
+
     public function getPassword(): string {
       return $this->password;
     }
@@ -119,9 +123,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
     }
 
     public function isEqualTo(UserInterface $user): bool {
-      if ($user->status === UserStatus::BLOCKED){
+      if ($user->getStatus() === UserStatus::BLOCKED){
         return false;
       }
       return true;
+    }
+
+    public function setIsVerified(bool $IsVerified){
+      if ($IsVerified){
+        $this->status = UserStatus::ACTIVE;
+      }
     }
 }
